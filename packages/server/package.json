@@ -1,0 +1,36 @@
+{
+  "name": "@package/server",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node -r tsconfig-paths/register src/server.ts",
+    "build": "tsc",
+    "jest": "jest",
+    "test": "jest",
+    "setup": "prisma generate && prisma migrate dev --name init --preview-feature"
+  },
+  "keywords": [
+    "server"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^27.5.2",
+    "@types/node": "^22.8.7",
+    "@types/ws": "^8.5.13",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "2.0.9",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@package/lib": "workspace:*",
+    "@prisma/client": "^5.21.1",
+    "http-status-codes": "^2.3.0",
+    "pg-promise": "^11.10.1",
+    "prisma": "^5.21.1",
+    "tslog": "^4.9.3",
+    "ws": "^8.18.0"
+  }
+}

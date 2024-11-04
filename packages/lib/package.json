@@ -1,0 +1,9 @@
+{
+  "name": "@package/lib",
+  "version": "1.0.0",
+  "description": "library for the package",
+  "main": "index.ts",
+  "author": "David Fischer",
+  "license": "MIT",
+  "type": "commonjs"
+}

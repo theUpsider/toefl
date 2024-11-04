@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "author": {
+    "name": "YOUR NAME"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspaces foreach -i --parallel --verbose --all run dev",
+    "lint": "yarn workspaces foreach --parallel --all run lint",
+    "test": "yarn workspaces foreach --parallel --all run jest",
+    "build": "yarn workspaces foreach --parallel --all run build",
+    "setup": "yarn workspaces foreach --parallel --all run setup"
+  },
+  "installConfig": {
+    "pnp": false
+  },
+  "pre-commit": "lint",
+  "license": "MIT",
+  "packageManager": "yarn@4.5.1"
+}
