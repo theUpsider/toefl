@@ -4,7 +4,13 @@ import '@/utils/css'
 import Keycloak from 'keycloak-js'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Route,
+  RouterProvider
+} from 'react-router-dom'
 import { registerSW } from 'virtual:pwa-register'
 
 import { Config, setConfig } from '@/utils/config'
@@ -46,6 +52,22 @@ const initializeKeycloak = async (keycloak: Keycloak, config: Config) => {
   }
 }
 
+const createAuthRouter = (authenticated: boolean) =>
+  createBrowserRouter(
+    createRoutesFromElements(
+      <Route>
+        <Route
+          path="/login"
+          element={authenticated ? <Navigate to="/" replace /> : <Login />}
+        />
+        <Route
+          path="/*"
+          element={authenticated ? <App /> : <Navigate to="/login" replace />}
+        />
+      </Route>
+    )
+  )
+
 // Main application setup
 fetch('/config/env.' + (process.env.NODE_ENV ?? 'development') + '.json')
   .then((response) => response.json())
@@ -61,21 +83,11 @@ fetch('/config/env.' + (process.env.NODE_ENV ?? 'development') + '.json')
 
     try {
       const authenticated = await initializeKeycloak(keycloak, config)
+      const router = createAuthRouter(authenticated)
 
       root.render(
         <React.StrictMode>
-          <BrowserRouter>
-            <Routes>
-              <Route
-                path="/login"
-                element={authenticated ? <Navigate to="/" replace /> : <Login />}
-              />
-              <Route
-                path="/*"
-                element={authenticated ? <App /> : <Navigate to="/login" replace />}
-              />
-            </Routes>
-          </BrowserRouter>
+          <RouterProvider router={router} />
         </React.StrictMode>
       )
     } catch (error) {

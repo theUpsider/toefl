@@ -6,10 +6,152 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-  //   provider = "postgresql"
-  // url      = env("DATABASE_URL")
+  // provider = "sqlite"
+  // url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // graph contains blob of graph data
+// This is your Prisma schema file
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  userType          UserType            @default(UNREGISTERED)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  packagePurchases  PackagePurchase[]
+  audioRecordings   AudioRecording[]
+  textResponses     TextResponse[]
+  multipleChoice    MultipleChoiceResponse[]
+}
+
+enum UserType {
+  UNREGISTERED
+  REGISTERED
+  ADMIN
+}
+
+model Package {
+  id               Int               @id @default(autoincrement())
+  name             String
+  type             PackageType
+  price            Float
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  purchases        PackagePurchase[]
+  documents        Document[]
+}
+
+enum PackageType {
+  SIMPLE
+  MEDIUM
+}
+
+model PackagePurchase {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  packageId Int
+  purchaseDate DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  package   Package  @relation(fields: [packageId], references: [id])
+}
+
+model Document {
+  id                Int       @id @default(autoincrement())
+  title             String
+  content           String    @db.Text
+  fileType          FileType
+  packageId         Int?
+  package           Package?  @relation(fields: [packageId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  highlightedText   HighlightedText[]
+  audioContent      Audio?
+  multipleChoice    MultipleChoice[]
+  dragDropQuestions DragDropQuestion[]
+  textQuestions     TextQuestion[]
+}
+
+enum FileType {
+  TEXT
+  AUDIO
+  MIXED
+}
+
+model HighlightedText {
+  id          Int      @id @default(autoincrement())
+  documentId  Int
+  document    Document @relation(fields: [documentId], references: [id])
+  startOffset Int
+  endOffset   Int
+  createdAt   DateTime @default(now())
+}
+
+model Audio {
+  id          Int      @id @default(autoincrement())
+  documentId  Int      @unique
+  document    Document @relation(fields: [documentId], references: [id])
+  fileUrl     String
+  duration    Int      // Duration in seconds
+  createdAt   DateTime @default(now())
+}
+
+model AudioRecording {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  fileUrl   String
+  duration  Int      // Duration in seconds
+  createdAt DateTime @default(now())
+}
+
+model MultipleChoice {
+  id          Int      @id @default(autoincrement())
+  documentId  Int
+  document    Document @relation(fields: [documentId], references: [id])
+  question    String
+  options     String[] // Array of possible answers
+  correctAnswer Int
+  responses   MultipleChoiceResponse[]
+}
+
+model MultipleChoiceResponse {
+  id                Int            @id @default(autoincrement())
+  userId           Int
+  user             User           @relation(fields: [userId], references: [id])
+  questionId       Int
+  question         MultipleChoice @relation(fields: [questionId], references: [id])
+  selectedAnswer   Int
+  createdAt        DateTime       @default(now())
+}
+
+model DragDropQuestion {
+  id          Int      @id @default(autoincrement())
+  documentId  Int
+  document    Document @relation(fields: [documentId], references: [id])
+  items       String[] // Array of items to be sorted
+  correctOrder Int[]   // Array of correct positions
+}
+
+model TextQuestion {
+  id          Int      @id @default(autoincrement())
+  documentId  Int
+  document    Document @relation(fields: [documentId], references: [id])
+  question    String
+  wordLimit   Int?
+  timeLimit   Int?     // Time limit in seconds
+  responses   TextResponse[]
+}
+
+model TextResponse {
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  user        User         @relation(fields: [userId], references: [id])
+  questionId  Int
+  question    TextQuestion @relation(fields: [questionId], references: [id])
+  response    String       @db.Text
+  wordCount   Int
+  createdAt   DateTime     @default(now())
+}
