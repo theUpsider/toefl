@@ -5,13 +5,14 @@ import {
   Route,
   RouterProvider
 } from 'react-router-dom'
+import TestPage from './TestPage'
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} })
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      <Route path="*" element={<div>Not found</div>} />
+      <Route path="*" element={<TestPage />} />
     </Route>
   )
 )

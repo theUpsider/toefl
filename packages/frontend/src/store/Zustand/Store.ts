@@ -1,13 +1,17 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
-export type StoreState = unknown // Insert slice types here
+import { createKeycloakSlice, KeycloakSlice } from './KeycloakSlice'
+
+export type StoreState = KeycloakSlice // Insert slice types here
 export type PersistedStoreState = unknown // Insert slice types here
 
 export const resetters: (() => void)[] = []
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useStore = create<StoreState>()((...a) => ({}))
+export const useStore = create<StoreState>()((...a) => ({
+  ...createKeycloakSlice(...a)
+}))
 
 export const usePersistedStore = create<PersistedStoreState>()(
   devtools(
