@@ -13,9 +13,6 @@
     "build": "yarn workspaces foreach --parallel --all run build",
     "setup": "yarn workspaces foreach --parallel --all run setup"
   },
-  "installConfig": {
-    "pnp": false
-  },
   "pre-commit": "lint",
   "license": "MIT",
   "packageManager": "yarn@4.5.1"
